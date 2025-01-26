@@ -1,0 +1,78 @@
+def exact_change(user_total):
+  """Calculates the fewest coins needed to make exact change for a given amount.
+
+  Args:
+      user_total: The total change amount in cents (integer).
+
+  Returns:
+      A tuple containing the number of dollars, quarters, dimes, nickels, and pennies (integer, integer, integer, integer, integer).
+  """
+
+  coins = {
+      "dollar": 100,
+      "quarter": 25,
+      "dime": 10,
+      "nickel": 5,
+      "penny": 1
+  }
+
+  num_dollars = user_total // coins["dollar"]
+  user_total %= coins["dollar"]
+
+  num_quarters = user_total // coins["quarter"]
+  user_total %= coins["quarter"]
+
+  num_dimes = user_total // coins["dime"]
+  user_total %= coins["dime"]
+
+  num_nickels = user_total // coins["nickel"]
+  user_total %= coins["nickel"]
+
+  num_pennies = user_total
+
+  return num_dollars, num_quarters, num_dimes, num_nickels, num_pennies
+
+def main():
+  while True:
+    user_input = input(""" Enter the amount of money you want to convert. 
+                       Use whole numbers. Example: $3.00 is 300. """) 
+
+    try:
+      if user_input == "exit":
+        break
+
+      if user_input.startswith("exact_change("):
+        # Extract the number from the function call string (safer than eval)
+        user_total_str = user_input[14:-1]  # Remove "exact_change(" and ")"
+        user_total = float(user_total_str) * 100  # Convert to cents
+
+      else:
+        try:
+          user_total = int(user_input)
+        except ValueError:
+          continue  # Silently handle invalid input
+
+      coin_breakdown = exact_change(user_total)
+
+      coin_names = {
+          "dollar": "dollar",
+          "quarter": "quarter",
+          "dime": "dime",
+          "nickel": "nickel",
+          "penny": "penny"
+      }
+      change_breakdown = ""
+      for coin, count in zip(coin_names.keys(), coin_breakdown):
+        coin_name = coin_names[coin] + "s" if count > 1 else coin_names[coin]  # Simplified logic for singular/plural
+        if count > 0:
+          change_breakdown += f"{count} {coin_name}\n"
+          
+        change_breakdown = "no change" if not any(coin_breakdown) else change_breakdown
+
+      print(change_breakdown.strip())  # Removed error message handling
+
+    except Exception:  # Broader exception handling
+      continue  # Silently handle any errors
+
+if __name__ == "__main__":
+  main()
